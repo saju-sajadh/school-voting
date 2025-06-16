@@ -131,13 +131,11 @@ export default function ElectionScreen() {
           <FaTrophy size={20} className="sm:w-6 sm:h-6" />
         </button>
       </div>
-      <div className="mb-4 text-center text-base sm:text-lg md:text-xl font-bold bg-transparent bg-opacity-20 backdrop-blur-lg p-2 sm:p-3 rounded-lg">
-        Voted: {voterCount}
-      </div>
+
       <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-6 text-center animate-fade-in">
-        Mar Baselios Maruthamonpaly Election 2025
+        Mar Baselios Maruthamonpally Election
       </h1>
-      <form action={handleSubmit} className="w-full max-w-4xl">
+      <form action={handleSubmit} className="w-full max-w-3xl">
         <div className="grid grid-cols-1 gap-4">
           {elections.map((election, index) => (
             <div
@@ -183,7 +181,8 @@ export default function ElectionScreen() {
             </div>
           ))}
         </div>
-        <div className="flex justify-center mt-4 sm:mt-6">
+        <div className="flex justify-between mt-4 sm:mt-6">
+          <div></div>
           <button
             type="submit"
             className="bg-gradient-to-r from-green-400 to-teal-400 text-gray-900 px-6 py-2 sm:px-8 sm:py-3 rounded-full font-semibold hover:from-green-300 hover:to-teal-300 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
@@ -191,12 +190,15 @@ export default function ElectionScreen() {
           >
             Submit Votes
           </button>
+            <div className="text-center text-base sm:text-lg md:text-xl font-bold bg-transparent bg-opacity-20 backdrop-blur-lg p-2 sm:p-3 rounded-lg">
+            Voted: {voterCount}
+          </div>
         </div>
       </form>
       {showResults && (
         <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-start sm:items-center justify-center z-50 animate-fade-in overflow-y-auto py-4 sm:py-0">
           <div className="bg-white bg-opacity-30 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-3xl w-full max-w-lg sm:max-w-2xl md:max-w-3xl mx-4 shadow-2xl border border-yellow-300 border-opacity-50 transform animate-slide-up">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-center mb-4 sm:mb-6 text-yellow-300 animate-pulse">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-center mb-4 sm:mb-6 text-yellow-500 animate-pulse">
               Election Results
             </h2>
             <div className="space-y-4 sm:space-y-6">
@@ -220,10 +222,7 @@ export default function ElectionScreen() {
                       >
                         <div className="flex items-center space-x-2 sm:space-x-3">
                           {nominee.name === election.winner && (
-                            <FaTrophy
-                              className="text-yellow-300"
-                              size={16}
-                            />
+                            <FaTrophy className="text-yellow-300" size={16} />
                           )}
                           <span className="font-medium text-sm sm:text-base">
                             {nominee.name}
