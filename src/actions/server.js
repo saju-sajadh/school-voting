@@ -90,3 +90,42 @@ export async function submitVotes(formData) {
     return { error: 'Failed to submit votes' };
   }
 }
+
+export async function getVoterCount() {
+  try {
+    await connectDB();
+    const elections = await ElectionModel.find({}, { 'nominees.votes': 1 });
+    const totalVotes = elections.reduce((sum, election) => {
+      const firstNomineeVotes = election.nominees[0]?.votes || 0;
+      return sum + firstNomineeVotes;
+    }, 0);
+    return { count: totalVotes };
+  } catch (error) {
+    console.error('Error fetching voter count:', error);
+    return { error: 'Failed to fetch voter count' };
+  }
+}
+
+export async function getElectionWinners() {
+  try {
+    await connectDB();
+    const elections = await ElectionModel.find({}, { title: 1, nominees: 1 });
+    const results = elections.map((election) => {
+      const winner = election.nominees.reduce((prev, curr) =>
+        curr.votes > prev.votes ? curr : prev
+      );
+      return {
+        title: election.title,
+        nominees: election.nominees.map((nominee) => ({
+          name: nominee.name,
+          votes: nominee.votes,
+        })),
+        winner: winner.name,
+      };
+    });
+    return { results };
+  } catch (error) {
+    console.error('Error fetching election results:', error);
+    return { error: 'Failed to fetch election results' };
+  }
+}

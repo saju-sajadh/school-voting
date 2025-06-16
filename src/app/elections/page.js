@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { submitVotes } from "../../actions/server";
-import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
+import {
+  submitVotes,
+  getVoterCount,
+  getElectionWinners,
+} from "../../actions/server";
+import toast, { Toaster } from "react-hot-toast";
+import { FaTrophy } from "react-icons/fa";
 
 const elections = [
   {
@@ -33,7 +38,21 @@ const elections = [
 
 export default function ElectionScreen() {
   const [selectedNominees, setSelectedNominees] = useState({});
-  const [message, setMessage] = useState("");
+  const [voterCount, setVoterCount] = useState(0);
+  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    async function fetchVoterCount() {
+      const result = await getVoterCount();
+      if (result.count !== undefined) {
+        setVoterCount(result.count);
+      } else {
+        toast.error(result.error);
+      }
+    }
+    fetchVoterCount();
+  }, []);
 
   const getInitials = (name) => {
     return name
@@ -59,8 +78,8 @@ export default function ElectionScreen() {
         nomineeName,
       }));
 
-    if (votes.length != 5) {
-      toast.error("Please choose 5 nominies");
+    if (votes.length !== 5) {
+      toast.error("Please choose 5 nominees");
       return;
     }
 
@@ -69,30 +88,66 @@ export default function ElectionScreen() {
     const result = await submitVotes(formData);
 
     if (result.error) {
-      toast.error("something went wrong!");
+      toast.error("Something went wrong!");
     } else {
-      toast.success("voted successfully");
+      toast.success("Voted successfully");
       setSelectedNominees({});
+      const countResult = await getVoterCount();
+      if (countResult.count !== undefined) {
+        setVoterCount(countResult.count);
+      }
+    }
+  };
+
+  const handleShowResults = async () => {
+    if (!showResults) {
+      const result = await getElectionWinners();
+      if (result.results) {
+        const sortedResults = result.results.map((election) => ({
+          ...election,
+          nominees: [...election.nominees].sort((a, b) =>
+            a.name === election.winner ? -1 : b.name === election.winner ? 1 : 0
+          ),
+        }));
+        setResults(sortedResults);
+        setShowResults(true);
+      } else {
+        toast.error(result.error);
+      }
+    } else {
+      setShowResults(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex flex-col justify-center items-center p-4 text-white overflow-hidden">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 text-center animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex flex-col items-center p-4 text-white overflow-x-hidden">
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
+      <div className="fixed top-4 right-4 z-10">
+        <button
+          onClick={handleShowResults}
+          className="p-2 sm:p-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 rounded-full hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+          aria-label="Show election results"
+        >
+          <FaTrophy size={20} className="sm:w-6 sm:h-6" />
+        </button>
+      </div>
+      <div className="mt-16 mb-4 text-center text-base sm:text-lg md:text-xl font-bold bg-transparent bg-opacity-20 backdrop-blur-lg p-2 sm:p-3 rounded-lg">
+        Voted: {voterCount}
+      </div>
+      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-6 text-center animate-fade-in">
         Mar Baselios Maruthamonpaly Election 2025
       </h1>
-
-      <form action={handleSubmit} className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl w-full">
+      <form action={handleSubmit} className="w-full max-w-7xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {elections.map((election, index) => (
             <div
               key={index}
-              className="bg-white bg-opacity-20 backdrop-blur-lg p-5 rounded-2xl shadow-xl border border-purple-300 border-opacity-30 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-white bg-opacity-20 backdrop-blur-lg p-4 sm:p-5 rounded-2xl shadow-xl border border-purple-300 border-opacity-30 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
             >
-              <h2 className="text-lg sm:text-xl font-bold text-center mb-4 text-yellow-300">
+              <h2 className="text-base sm:text-lg md:text-xl font-bold text-center mb-3 sm:mb-4 text-yellow-300">
                 {election.title}
               </h2>
-              <div className="flex flex-col space-y-2 gap-1">
+              <div className="flex flex-col space-y-2">
                 {election.nominees.map((nominee, idx) => (
                   <button
                     key={idx}
@@ -100,23 +155,25 @@ export default function ElectionScreen() {
                     onClick={() =>
                       handleSelectNominee(election.title, nominee.name)
                     }
-                    className={`w-full flex items-center justify-between space-x-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 py-2 px-4 rounded-lg font-semibold hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 ${
+                    className={`w-full flex items-center justify-between space-x-2 sm:space-x-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 py-2 px-3 sm:px-4 rounded-lg font-semibold hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 ${
                       selectedNominees[election.title] === nominee.name
-                        ? " ring-green-400"
+                        ? "ring-2 ring-green-400"
                         : ""
                     }`}
                     aria-label={`Select ${nominee.name} for ${election.title}`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs sm:text-sm font-bold">
                         {getInitials(nominee.name)}
                       </div>
-                      <span>{nominee.name}</span>
+                      <span className="text-sm sm:text-base">
+                        {nominee.name}
+                      </span>
                     </div>
                     <div
-                      className={`w-6 h-3 rounded-full transition-all duration-300 ${
+                      className={`w-4 h-2 sm:w-6 sm:h-3 rounded-full transition-all duration-300 ${
                         selectedNominees[election.title] === nominee.name
-                          ? "bg-green-400 shadow-[0_0_10px_#34d399]"
+                          ? "bg-green-400 shadow-[0_0_8px_#34d399] sm:shadow-[0_0_10px_#34d399]"
                           : "bg-white"
                       }`}
                     ></div>
@@ -126,18 +183,73 @@ export default function ElectionScreen() {
             </div>
           ))}
         </div>
-
-        {/* Submit Button */}
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-4 sm:mt-6">
           <button
             type="submit"
-            className="bg-gradient-to-r from-green-400 to-teal-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:from-green-300 hover:to-teal-300 transition-all duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-green-400 to-teal-400 text-gray-900 px-6 py-2 sm:px-8 sm:py-3 rounded-full font-semibold hover:from-green-300 hover:to-teal-300 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
             aria-label="Submit all votes"
           >
             Submit Votes
           </button>
         </div>
       </form>
+      {showResults && (
+        <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-start sm:items-center justify-center z-50 animate-fade-in overflow-y-auto py-4 sm:py-0">
+          <div className="bg-white bg-opacity-30 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-3xl w-full max-w-lg sm:max-w-2xl md:max-w-3xl mx-4 shadow-2xl border border-yellow-300 border-opacity-50 transform animate-slide-up">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-center mb-4 sm:mb-6 text-yellow-300 animate-pulse">
+              Election Results
+            </h2>
+            <div className="space-y-4 sm:space-y-6">
+              {results.map((election, index) => (
+                <div
+                  key={index}
+                  className="bg-white bg-opacity-20 p-4 sm:p-5 rounded-xl shadow-lg border border-purple-300 border-opacity-30"
+                >
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-center mb-2 sm:mb-3 text-purple-600">
+                    {election.title}
+                  </h3>
+                  <div className="space-y-2">
+                    {election.nominees.map((nominee, idx) => (
+                      <div
+                        key={idx}
+                        className={`flex items-center justify-between p-2 sm:p-3 rounded-lg transition-all duration-300 ${
+                          nominee.name === election.winner
+                            ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900  sm:shadow-[0_0_15px_#facc15] scale-105"
+                            : "bg-white bg-opacity-10 text-black"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2 sm:space-x-3">
+                          {nominee.name === election.winner && (
+                            <FaTrophy
+                              className="text-yellow-300"
+                              size={16}
+                            />
+                          )}
+                          <span className="font-medium text-sm sm:text-base">
+                            {nominee.name}
+                          </span>
+                        </div>
+                        <span className="font-bold text-sm sm:text-base">
+                          {nominee.votes} votes
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center mt-4 sm:mt-8">
+              <button
+                onClick={() => setShowResults(false)}
+                className="bg-gradient-to-r from-red-400 to-pink-400 text-gray-900 px-6 py-2 sm:px-8 sm:py-3 rounded-full font-semibold hover:from-red-300 hover:to-pink-300 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
+                aria-label="Close results"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
