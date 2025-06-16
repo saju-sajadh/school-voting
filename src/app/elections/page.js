@@ -214,7 +214,7 @@ export default function ElectionScreen() {
                         key={idx}
                         className={`flex items-center justify-between p-2 sm:p-3 rounded-lg transition-all duration-300 ${
                           nominee.name === election.winner
-                            ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900  sm:shadow-[0_0_15px_#facc15] scale-105"
+                            ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 scale-105"
                             : "bg-white bg-opacity-10 text-black"
                         }`}
                       >
