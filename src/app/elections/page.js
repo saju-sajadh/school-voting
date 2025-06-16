@@ -41,18 +41,21 @@ export default function ElectionScreen() {
   const [voterCount, setVoterCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
+  const [voteSubmitted, setVoteSubmitted] = useState(0); // Trigger for useEffect
 
   useEffect(() => {
     async function fetchVoterCount() {
       const result = await getVoterCount();
       if (result.count !== undefined) {
+        console.log('Client received voter count:', result.count);
         setVoterCount(result.count);
       } else {
+        console.error('Client voter count error:', result.error);
         toast.error(result.error);
       }
     }
     fetchVoterCount();
-  }, []);
+  }, [voteSubmitted]);
 
   const getInitials = (name) => {
     return name
@@ -88,14 +91,12 @@ export default function ElectionScreen() {
     const result = await submitVotes(formData);
 
     if (result.error) {
-      toast.error("Something went wrong!");
+      console.error('Vote submission error:', result.error);
+      toast.error("Something went wrong! " + result.error);
     } else {
       toast.success("Voted successfully");
       setSelectedNominees({});
-      const countResult = await getVoterCount();
-      if (countResult.count !== undefined) {
-        setVoterCount(countResult.count);
-      }
+      setVoteSubmitted((prev) => prev + 1); // Trigger voter count refresh
     }
   };
 
@@ -112,6 +113,7 @@ export default function ElectionScreen() {
         setResults(sortedResults);
         setShowResults(true);
       } else {
+        console.error('Election results error:', result.error);
         toast.error(result.error);
       }
     } else {
@@ -131,7 +133,6 @@ export default function ElectionScreen() {
           <FaTrophy size={20} className="sm:w-6 sm:h-6" />
         </button>
       </div>
-
       <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-6 text-center animate-fade-in">
         Mar Baselios Maruthamonpally Election
       </h1>
@@ -190,8 +191,8 @@ export default function ElectionScreen() {
           >
             Submit Votes
           </button>
-            <div className="text-center text-base sm:text-lg md:text-xl font-bold bg-transparent bg-opacity-20 backdrop-blur-lg p-2 sm:p-3 rounded-lg">
-            Voted: {voterCount}
+          <div className="text-center text-base sm:text-lg font-bold bg-transparent bg-opacity-20 backdrop-blur-lg p-2 sm:p-3 rounded-lg">
+            Voters: {voterCount}
           </div>
         </div>
       </form>
@@ -207,7 +208,7 @@ export default function ElectionScreen() {
                   key={index}
                   className="bg-white bg-opacity-20 p-4 sm:p-5 rounded-xl shadow-lg border border-purple-300 border-opacity-30"
                 >
-                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-center mb-2 sm:mb-3 text-purple-600">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-center mb-2 sm:mb-3 text-purple-200">
                     {election.title}
                   </h3>
                   <div className="space-y-2">
@@ -216,8 +217,8 @@ export default function ElectionScreen() {
                         key={idx}
                         className={`flex items-center justify-between p-2 sm:p-3 rounded-lg transition-all duration-300 ${
                           nominee.name === election.winner
-                            ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 scale-105"
-                            : "bg-white bg-opacity-10 text-black"
+                            ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 shadow-[0_0_12px_#facc15] sm:shadow-[0_0_15px_#facc15] scale-105"
+                            : "bg-white bg-opacity-10 text-white"
                         }`}
                       >
                         <div className="flex items-center space-x-2 sm:space-x-3">
