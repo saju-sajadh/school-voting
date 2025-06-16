@@ -131,13 +131,13 @@ export default function ElectionScreen() {
           <FaTrophy size={20} className="sm:w-6 sm:h-6" />
         </button>
       </div>
-      <div className="mt-16 mb-4 text-center text-base sm:text-lg md:text-xl font-bold bg-transparent bg-opacity-20 backdrop-blur-lg p-2 sm:p-3 rounded-lg">
+      <div className="mb-4 text-center text-base sm:text-lg md:text-xl font-bold bg-transparent bg-opacity-20 backdrop-blur-lg p-2 sm:p-3 rounded-lg">
         Voted: {voterCount}
       </div>
       <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-6 text-center animate-fade-in">
         Mar Baselios Maruthamonpaly Election 2025
       </h1>
-      <form action={handleSubmit} className="w-full max-w-7xl">
+      <form action={handleSubmit} className="w-full max-w-4xl">
         <div className="grid grid-cols-1 gap-4">
           {elections.map((election, index) => (
             <div
