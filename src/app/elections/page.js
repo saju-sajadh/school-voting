@@ -10,6 +10,18 @@ import toast, { Toaster } from "react-hot-toast";
 import { FaTrophy } from "react-icons/fa";
 
 const elections = [
+   {
+    title: "Head Boy",
+    nominees: [
+      { name: "Liya Prashand" },
+      { name: "Devipriya B R" },
+      { name: "Serina Jojee" },
+    ],
+  },
+  {
+    title: "Head Girl",
+    nominees: [{ name: "Sidharth R S" }, { name: "Vinayak Suresh" }],
+  },
   {
     title: "Sports Club Secretary",
     nominees: [{ name: "Aaron Shibu Mathew" }, { name: "Alwin Raghu Chandra" }],
@@ -22,18 +34,7 @@ const elections = [
     title: "Sports Captain",
     nominees: [{ name: "Fahad" }, { name: "Nasmal" }],
   },
-  {
-    title: "Head Boy",
-    nominees: [
-      { name: "Liya Prashand" },
-      { name: "Devipriya B R" },
-      { name: "Serina Jojee" },
-    ],
-  },
-  {
-    title: "Head Girl",
-    nominees: [{ name: "Sidharth R S" }, { name: "Vinayak Suresh" }],
-  },
+ 
 ];
 
 export default function ElectionScreen() {
@@ -41,7 +42,13 @@ export default function ElectionScreen() {
   const [voterCount, setVoterCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
-  const [voteSubmitted, setVoteSubmitted] = useState(0); // Trigger for useEffect
+  const [voteSubmitted, setVoteSubmitted] = useState(0);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  // Hardcoded password for local verification (in a real app, this should be more secure)
+  const ADMIN_PASSWORD = "election2025";
 
   useEffect(() => {
     async function fetchVoterCount() {
@@ -96,12 +103,19 @@ export default function ElectionScreen() {
     } else {
       toast.success("Voted successfully");
       setSelectedNominees({});
-      setVoteSubmitted((prev) => prev + 1); // Trigger voter count refresh
+      setVoteSubmitted((prev) => prev + 1);
     }
   };
 
-  const handleShowResults = async () => {
-    if (!showResults) {
+  const handleShowResults = () => {
+    setShowPasswordModal(true);
+    setPassword("");
+    setPasswordError("");
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (password === ADMIN_PASSWORD) {
       const result = await getElectionWinners();
       if (result.results) {
         const sortedResults = result.results.map((election) => ({
@@ -112,12 +126,14 @@ export default function ElectionScreen() {
         }));
         setResults(sortedResults);
         setShowResults(true);
+        setShowPasswordModal(false);
       } else {
         console.error('Election results error:', result.error);
         toast.error(result.error);
       }
     } else {
-      setShowResults(false);
+      setPasswordError("Incorrect password");
+      toast.error("Incorrect password");
     }
   };
 
@@ -143,7 +159,7 @@ export default function ElectionScreen() {
               key={index}
               className="bg-white bg-opacity-20 backdrop-blur-lg p-4 sm:p-5 rounded-2xl shadow-xl border border-purple-300 border-opacity-30 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
             >
-              <h2 className="text-base sm:text-lg md:text-xl font-bold text-center mb-3 sm:mb-4 text-yellow-300">
+              <h2 className="text-base sm:text-lg md:text-xl font-bold text-center mb-3 sm:mb-4 text-yellow-600">
                 {election.title}
               </h2>
               <div className="flex flex-col space-y-2">
@@ -196,8 +212,47 @@ export default function ElectionScreen() {
           </div>
         </div>
       </form>
+      {showPasswordModal && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-transparent flex items-center justify-center z-50">
+          <div className="bg-white bg-opacity-30 backdrop-blur-xl p-6 rounded-3xl w-full max-w-md mx-4 shadow-2xl border border-yellow-300 border-opacity-50">
+            <h2 className="text-xl font-bold text-center mb-4 text-yellow-500">
+              Enter Admin Password
+            </h2>
+            <form onSubmit={handlePasswordSubmit}>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-2 rounded-lg border text-gray-900 mb-4"
+                placeholder="Password"
+                aria-label="Admin password"
+              />
+              {passwordError && (
+                <p className="text-red-500 text-sm mb-4">{passwordError}</p>
+              )}
+              <div className="flex justify-center space-x-4">
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-green-400 to-teal-400 text-gray-900 px-6 py-2 rounded-full font-semibold hover:from-green-300 hover:to-teal-300 transition-all duration-300"
+                  aria-label="Submit password"
+                >
+                  Submit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordModal(false)}
+                  className="bg-gradient-to-r from-red-400 to-pink-400 text-gray-900 px-6 py-2 rounded-full font-semibold hover:from-red-300 hover:to-pink-300 transition-all duration-300"
+                  aria-label="Cancel"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {showResults && (
-        <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-start sm:items-center justify-center z-50 animate-fade-in overflow-y-auto py-4 sm:py-0">
+        <div className="fixed inset-0  flex items-start sm:items-center justify-center z-50 animate-fade-in overflow-y-auto py-4 sm:py-0">
           <div className="bg-white bg-opacity-30 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-3xl w-full max-w-lg sm:max-w-2xl md:max-w-3xl mx-4 shadow-2xl border border-yellow-300 border-opacity-50 transform animate-slide-up">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-center mb-4 sm:mb-6 text-yellow-500 animate-pulse">
               Election Results
@@ -208,7 +263,7 @@ export default function ElectionScreen() {
                   key={index}
                   className="bg-white bg-opacity-20 p-4 sm:p-5 rounded-xl shadow-lg border border-purple-300 border-opacity-30"
                 >
-                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-center mb-2 sm:mb-3 text-purple-200">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-center mb-2 sm:mb-3 text-purple-600">
                     {election.title}
                   </h3>
                   <div className="space-y-2">
@@ -217,8 +272,8 @@ export default function ElectionScreen() {
                         key={idx}
                         className={`flex items-center justify-between p-2 sm:p-3 rounded-lg transition-all duration-300 ${
                           nominee.name === election.winner
-                            ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 shadow-[0_0_12px_#facc15] sm:shadow-[0_0_15px_#facc15] scale-105"
-                            : "bg-white bg-opacity-10 text-white"
+                            ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 scale-105"
+                            : "bg-white bg-opacity-10 text-black"
                         }`}
                       >
                         <div className="flex items-center space-x-2 sm:space-x-3">
