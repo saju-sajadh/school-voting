@@ -138,7 +138,7 @@ export default function ElectionScreen() {
         Mar Baselios Maruthamonpaly Election 2025
       </h1>
       <form action={handleSubmit} className="w-full max-w-7xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {elections.map((election, index) => (
             <div
               key={index}
