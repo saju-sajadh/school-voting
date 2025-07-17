@@ -111,9 +111,6 @@ export default function ElectionScreen() {
   const handleSubmit = async (formData) => {
     try {
       const audio = new Audio("/audio/beep.mp3");
-      audio
-        .play()
-        .catch((error) => console.error("Error playing sound:", error));
       const votes = Object.entries(selectedNominees)
         .filter(([_, nomineeName]) => nomineeName)
         .map(([categoryTitle, nomineeName]) => ({
@@ -126,7 +123,9 @@ export default function ElectionScreen() {
         toast.error(`Please choose ${categories.length} nominees`);
         return;
       }
-
+      audio
+        .play()
+        .catch((error) => console.error("Error playing sound:", error));
       formData.set("votes", JSON.stringify(votes));
       const result = await submitVotes(formData);
 
