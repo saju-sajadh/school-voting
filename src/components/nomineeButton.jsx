@@ -10,7 +10,7 @@ export default function NomineeButton({
     <button
       type="button"
       onClick={() => handleSelectNominee(categoryTitle, nominee.name)}
-      className={`w-full flex items-center justify-between space-x-2 sm:space-x-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 py-2 px-3 sm:px-4 rounded-lg font-semibold hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 ${
+      className={`w-full flex items-center justify-between space-x-2 sm:space-x-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 py-[14px] px-3 sm:px-4 rounded-lg font-semibold hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 ${
         selectedNominees[categoryTitle] === nominee.name
           ? "ring-2 ring-green-400"
           : ""

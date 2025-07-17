@@ -21,7 +21,7 @@ export async function getElectionTitles() {
     await connectDB();
     const elections = await ElectionModel.find({}, "title");
     const titles = elections.map((e) => e.title);
-    console.log("Fetched election titles:", titles);
+    //console.log("Fetched election titles:", titles);
     return { titles };
   } catch (error) {
     console.error("Error fetching election titles:", error.stack);
@@ -32,12 +32,9 @@ export async function getElectionTitles() {
 export async function getElection(electionTitle) {
   try {
     await connectDB();
-    console.log("Fetching election with title:", electionTitle);
+    //console.log("Fetching election with title:", electionTitle);
     const allElections = await ElectionModel.find({}, "title");
-    console.log(
-      "All election titles in DB:",
-      allElections.map((e) => e.title)
-    );
+    //console.log("All election titles in DB:",allElections.map((e) => e.title));
     const election = await ElectionModel.findOne(
       { title: { $regex: new RegExp(`^${electionTitle}$`, "i") } },
       "title categories"
@@ -104,7 +101,7 @@ export async function createElection(title, password) {
       password: hashedPassword,
       categories: [],
     });
-    console.log("Created election:", title);
+    //console.log("Created election:", title);
     return { message: "Election created successfully" };
   } catch (error) {
     console.error("Error creating election:", error.stack);
@@ -138,7 +135,7 @@ export async function addCategory(electionTitle, categoryTitle, password) {
     if (result.matchedCount === 0) {
       return { error: "Election not found" };
     }
-    console.log("Added category:", categoryTitle, "to", electionTitle);
+    //console.log("Added category:", categoryTitle, "to", electionTitle);
     return { message: "Category added successfully" };
   } catch (error) {
     console.error("Error adding category:", error.stack);
@@ -183,14 +180,14 @@ export async function updateCategory({
     if (result.matchedCount === 0) {
       return { error: "Category or election not found" };
     }
-    console.log(
-      "Updated category:",
-      originalCategoryTitle,
-      "to",
-      newCategoryTitle,
-      "in",
-      electionTitle
-    );
+    //console.log(
+    //"Updated category:",
+    //originalCategoryTitle,
+    // "to",
+    // newCategoryTitle,
+    // "in",
+    // electionTitle
+    //);
     return { message: "Category updated successfully" };
   } catch (error) {
     console.error("Error updating category:", error.stack);
@@ -218,7 +215,7 @@ export async function deleteCategory(electionTitle, categoryTitle, password) {
     if (result.matchedCount === 0) {
       return { error: "Category or election not found" };
     }
-    console.log("Deleted category:", categoryTitle, "from", electionTitle);
+    //console.log("Deleted category:", categoryTitle, "from", electionTitle);
     return { message: "Category deleted successfully" };
   } catch (error) {
     console.error("Error deleting category:", error.stack);
@@ -243,7 +240,7 @@ export async function deleteElection(title, password) {
     if (result.deletedCount === 0) {
       return { error: "Election not found" };
     }
-    console.log("Deleted election:", title);
+    //console.log("Deleted election:", title);
     return { message: "Election deleted successfully" };
   } catch (error) {
     console.error("Error deleting election:", error.stack);
@@ -342,14 +339,14 @@ export async function addCandidate({
       }
       return { error: "Category or election not found" };
     }
-    console.log(
-      "Added candidate:",
-      candidateName,
-      "to category:",
-      categoryTitle,
-      "in",
-      electionTitle
-    );
+    //console.log(
+    // "Added candidate:",
+    //candidateName,
+    // "to category:",
+    // categoryTitle,
+    // "in",
+    // electionTitle
+    //);
     return { message: "Candidate added successfully" };
   } catch (error) {
     console.error("Error adding candidate:", error.stack);
@@ -462,14 +459,14 @@ export async function updateCandidate({
       }
       return { error: "Candidate, category, or election not found" };
     }
-    console.log(
-      "Updated candidate:",
-      originalName,
-      "to",
-      newName,
-      "in category:",
-      categoryTitle
-    );
+    //console.log(
+    // "Updated candidate:",
+    //originalName,
+    //"to",
+    //newName,
+    // "in category:",
+    // categoryTitle
+    //);
     return { message: "Candidate updated successfully" };
   } catch (error) {
     console.error("Error updating candidate:", error.stack);
@@ -491,14 +488,14 @@ export async function deleteCandidate({
     if (result.matchedCount === 0) {
       return { error: "Candidate, category, or election not found" };
     }
-    console.log(
-      "Deleted candidate:",
-      candidateName,
-      "from category:",
-      categoryTitle,
-      "in",
-      electionTitle
-    );
+    //console.log(
+    //"Deleted candidate:",
+    //candidateName,
+    //"from category:",
+    //categoryTitle,
+    //"in",
+    // electionTitle
+    //);
     return { message: "Candidate deleted successfully" };
   } catch (error) {
     console.error("Error deleting candidate:", error.stack);
@@ -557,7 +554,7 @@ export async function submitVotes(formData) {
       return { error: `Exactly ${validCategories.length} votes are required` };
     }
 
-    console.log("Processing votes:", votes);
+    //console.log("Processing votes:", votes);
 
     await Promise.all(
       votes.map(async (vote) => {
@@ -584,7 +581,7 @@ export async function submitVotes(formData) {
       })
     );
 
-    console.log("Votes submitted successfully");
+    //console.log("Votes submitted successfully");
     return { message: "Votes submitted successfully" };
   } catch (error) {
     console.error("Error submitting votes:", error.stack);
@@ -595,13 +592,13 @@ export async function submitVotes(formData) {
 export async function getVoterCount(electionTitle) {
   try {
     await connectDB();
-    console.log("Fetching voter count for election:", electionTitle);
+    //console.log("Fetching voter count for election:", electionTitle);
     const election = await ElectionModel.findOne(
       { title: { $regex: new RegExp(`^${electionTitle}$`, "i") } },
       "categories.nominees.votes"
     );
     if (!election) {
-      console.log("Election not found:", electionTitle);
+      //console.log("Election not found:", electionTitle);
       return { error: "Election not found" };
     }
     const categories = Array.isArray(election.categories)
@@ -619,14 +616,14 @@ export async function getVoterCount(electionTitle) {
     const categoryCount = categories.length;
     const voterCount =
       categoryCount > 0 ? Math.floor(totalVotes / categoryCount) : 0;
-    console.log(
-      "Fetched voter count:",
-      voterCount,
-      "Total votes:",
-      totalVotes,
-      "for election:",
-      electionTitle
-    );
+    //console.log(
+    //"Fetched voter count:",
+    // voterCount,
+    //"Total votes:",
+    //totalVotes,
+    //"for election:",
+    //electionTitle
+    // );
     return { count: voterCount };
   } catch (error) {
     console.error("Error fetching voter count:", error.stack);
@@ -660,13 +657,13 @@ export async function getElectionWinners(electionTitle) {
         nominees: nominees.map((nominee) => ({
           name: nominee.name,
           votes: nominee.votes || 0,
-          photo: nominee.photo || null, 
-          logo: nominee.logo || null, 
+          photo: nominee.photo || null,
+          logo: nominee.logo || null,
         })),
         winner: winner.name || "No nominees",
       };
     });
-    console.log("Fetched election results for:", electionTitle, results);
+    //console.log("Fetched election results for:", electionTitle, results);
     return { results };
   } catch (error) {
     console.error("Error fetching election results:", error.stack);

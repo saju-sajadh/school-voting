@@ -6,10 +6,10 @@ export default function ResultsPanel({
   electionTitle,
 }) {
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-transparent flex items-start sm:items-center justify-center z-50 animate-fade-in overflow-y-auto py-4 sm:py-0">
+    <div className="fixed inset-0 backdrop-blur-sm bg-transparent flex items-start sm:items-center justify-center z-50 animate-fade-in overflow-y-auto py-4 sm:py-0 my-2">
       <div className="bg-white bg-opacity-30 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-3xl w-full max-w-lg sm:max-w-2xl md:max-w-3xl mx-4 shadow-2xl border border-yellow-300 border-opacity-50 transform animate-slide-up">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-center mb-4 sm:mb-6 text-yellow-500 animate-pulse">
-          Election Results - {electionTitle}
+          {electionTitle}
         </h2>
         <div className="space-y-4 sm:space-y-6">
           {results.map((category, index) => (
