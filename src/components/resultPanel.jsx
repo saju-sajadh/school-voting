@@ -22,7 +22,7 @@ export default function ResultsPanel({
               </h3>
               <div className="space-y-2">
                 {[...category.nominees]
-                  .sort((a, b) => b.votes - a.votes) // Sort by votes in descending order
+                  .sort((a, b) => b.votes - a.votes) 
                   .map((nominee, idx) => (
                     <div
                       key={idx}

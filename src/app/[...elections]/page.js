@@ -108,31 +108,37 @@ export default function ElectionScreen() {
     }));
   };
 
-  
-
   const handleSubmit = async (formData) => {
-    const votes = Object.entries(selectedNominees)
-      .filter(([_, nomineeName]) => nomineeName)
-      .map(([categoryTitle, nomineeName]) => ({
-        electionTitle,
-        categoryTitle,
-        nomineeName,
-      }));
+    try {
+      const audio = new Audio("/audio/beep.mp3");
+      audio
+        .play()
+        .catch((error) => console.error("Error playing sound:", error));
+      const votes = Object.entries(selectedNominees)
+        .filter(([_, nomineeName]) => nomineeName)
+        .map(([categoryTitle, nomineeName]) => ({
+          electionTitle,
+          categoryTitle,
+          nomineeName,
+        }));
 
-    if (votes.length !== categories.length) {
-      toast.error(`Please choose ${categories.length} nominees`);
-      return;
-    }
+      if (votes.length !== categories.length) {
+        toast.error(`Please choose ${categories.length} nominees`);
+        return;
+      }
 
-    formData.set("votes", JSON.stringify(votes));
-    const result = await submitVotes(formData);
+      formData.set("votes", JSON.stringify(votes));
+      const result = await submitVotes(formData);
 
-    if (result.error) {
-      toast.error("Something went wrong! " + result.error);
-    } else {
-      toast.success("Voted successfully");
-      setSelectedNominees({});
-      setVoteSubmitted((prev) => prev + 1);
+      if (result.error) {
+        toast.error("Something went wrong! ");
+      } else {
+        toast.success("Voted successfully");
+        setSelectedNominees({});
+        setVoteSubmitted((prev) => prev + 1);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
