@@ -25,9 +25,7 @@ export default function CandidateManager({
     e.preventDefault();
     if (
       !newCandidate.name ||
-      !newCandidate.category ||
-      !newCandidate.photo ||
-      !newCandidate.logo
+      !newCandidate.category
     ) {
       toast.error("Please provide candidate name, category, photo, and logo");
       return;
@@ -62,8 +60,8 @@ export default function CandidateManager({
                     ...category.nominees,
                     {
                       name: newCandidate.name,
-                      photo: photoUrl || '/loading.png', // Use the URL or fallback
-                      logo: logoUrl || '/loading.png',   // Use the URL or fallback
+                      photo: photoUrl || null, // Use the URL or fallback
+                      logo: logoUrl || null,   // Use the URL or fallback
                       votes: 0,
                     },
                   ],
@@ -168,20 +166,25 @@ export default function CandidateManager({
             {category.nominees.map((nominee, idx) => (
               <div key={idx} className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-4">
-                  <Image
-                    src={nominee.photo || '/loading.png'} // Use || instead of ?? for clarity
-                    alt={`${nominee.name}'s photo`}
-                    width={28}
-                    height={32}
-                    className="rounded object-cover"
-                  />
-                  <Image
-                    src={nominee.logo || '/loading.png'} // Use || instead of ?? for clarity
-                    alt={`${nominee.name}'s logo`}
-                    width={32}
-                    height={32}
-                    className="rounded object-cover"
-                  />
+                  {nominee.photo && nominee.photo !== '/loading.png' && (
+  <Image
+    src={nominee.photo}
+    alt={`${nominee.name}'s photo`}
+    width={28}
+    height={32}
+    className="rounded object-cover"
+  />
+)}
+{nominee.logo && nominee.logo !== '/loading.png' && (
+  <Image
+    src={nominee.logo}
+    alt={`${nominee.name}'s logo`}
+    width={32}
+    height={32}
+    className="rounded object-cover"
+  />
+)}
+
                   <span className="text-black font-bold">{nominee.name}</span>
                 </div>
                 <div className="flex space-x-2">
