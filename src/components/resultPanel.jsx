@@ -31,20 +31,25 @@ export default function ResultsPanel({
                       }`}
                     >
                       <div className="flex items-center space-x-2 sm:space-x-3">
-                        <Image
-                          src={nominee.photo || "/default-photo.jpg"}
-                          alt={`${nominee.name}'s photo`}
-                          width={32}
-                          height={32}
-                          className="rounded-full object-cover"
-                        />
-                        <Image
-                          src={nominee.logo || "/default-logo.jpg"}
-                          alt={`${nominee.name}'s logo`}
-                          width={32}
-                          height={32}
-                          className="rounded-full object-cover"
-                        />
+                        {nominee.photo && nominee.photo !== '/loading.png' && (
+  <Image
+    src={nominee.photo}
+    alt={`${nominee.name}'s photo`}
+    width={32}
+    height={32}
+    className="rounded-full object-cover"
+  />
+)}
+{nominee.logo && nominee.logo !== '/loading.png' && (
+  <Image
+    src={nominee.logo}
+    alt={`${nominee.name}'s logo`}
+    width={32}
+    height={32}
+    className="rounded-full object-cover"
+  />
+)}
+
                         <span className="font-medium text-sm sm:text-base">
                           {nominee.name}
                         </span>
