@@ -18,23 +18,28 @@ export default function NomineeButton({
       aria-label={`Select ${nominee.name} for ${categoryTitle}`}
     >
       <div className="flex items-center space-x-2 sm:space-x-3">
-        <img
-          src={nominee.photo ?? "/default-photo.jpg"}
-          alt={`${nominee.name}'s photo`}
-          width="32"
-          height="32"
-          className="rounded-full object-cover"
-          style={{ width: "32px", height: "32px" }}
-        />
-        <span className="text-sm sm:text-base">{nominee.name}</span>
-        <img
-          src={nominee.logo ?? "/default-logo.jpg"}
-          alt={`${nominee.name}'s logo`}
-          width="32"
-          height="32"
-          className="rounded-full object-cover"
-          style={{ width: "32px", height: "32px" }}
-        />
+{nominee.photo && nominee.photo !== '/loading.png' && (
+  <img
+    src={nominee.photo}
+    alt={`${nominee.name}'s photo`}
+    width="32"
+    height="32"
+    className="rounded-full object-cover"
+    style={{ width: "32px", height: "32px" }}
+  />
+)}
+<span className="text-sm sm:text-base">{nominee.name}</span>
+{nominee.logo && nominee.logo !== '/loading.png' && (
+  <img
+    src={nominee.logo}
+    alt={`${nominee.name}'s logo`}
+    width="32"
+    height="32"
+    className="rounded-full object-cover"
+    style={{ width: "32px", height: "32px" }}
+  />
+)}
+
       </div>
       <div
         className={`w-4 h-2 sm:w-6 sm:h-3 rounded-full transition-all duration-300 ${
